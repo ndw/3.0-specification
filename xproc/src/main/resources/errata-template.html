@@ -50,7 +50,28 @@
 <a href="https://www.w3.org/community/about/agreements/cla-deed/">summary</a> is available.</p>
 <hr title="Separator for header" />
 
-<p>There are no errata at this time.</p>
+<h2>Proposed errata, June 2024</h2>
+
+<div class="erratum">
+<h3>Make p:import more explicit,
+<a href="https://github.com/xproc/3.0-specification/issues/1083">#1083</a></h3>
+
+<p>Editorial clarifications. The static error <code>err:XS0053</code> has been
+removed, importing a <code>p:declare-step</code> that doesn’t specify a
+<code>type</code> attribute is no longer an error. The step won’t be usable, as
+it has no type, but this is consistent with importing such a step in a
+<code>p:library</code> which has never been an error.</p>
+
+<p>An inconsistency remains with respect to the visibility of a step. When a
+<code>p:declare-step</code> is directly imported, the visibility attribute is
+ignored. It might be more consistent to ignore the step under those conditions,
+but that change would introduce a backwards incompatibility with no clear
+benefit.</p>
+</div>
+
+
+
+
 </div>
 </body>
 </html>
