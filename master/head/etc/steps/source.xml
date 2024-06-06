@@ -438,8 +438,10 @@ element's [base URI].</para>
       <term><option>parameters</option></term>
       <listitem>
         <para>The <option>parameters</option> option can be used to supply parameters to control the
-          archiving. <impl>The semantics of the keys and the allowed values for these keys are
-              <glossterm>implementation-defined</glossterm>.</impl>
+          archiving. Several parameters are defined for processing
+          <link linkend="cv.archive-zips">zip archives</link>, but implementations are
+          free to use additional parameters and to use parameters for controlling
+          how other archive formats are processed.
           <error code="C0079">It is a <glossterm>dynamic error</glossterm> if the map
               <option>parameters</option> contains an entry whose key is defined by the
             implementation and whose value is not valid for that key.</error></para>
@@ -1134,7 +1136,7 @@ equality.</para>
 <p:declare-step type="p:compare">
    <p:input port="source" primary="true" content-types="any"/>
    <p:input port="alternate" content-types="any"/>
-   <p:output port="result" content-types="application/xml"/>
+   <p:output port="result" primary="true" content-types="application/xml"/>
    <p:output port="differences" content-types="any" sequence="true"/>
    <p:option name="parameters" as="map(xs:QName,item()*)?"/>
    <p:option name="method" as="xs:QName?"/>
@@ -1177,6 +1179,13 @@ summary of the differences between the two documents may appear on the
 <para feature="compare-preserves-none">No document properties are preserved.
 The comparison document has no <property>base-uri</property>.</para>
 </simplesect>
+
+<simplesect>
+<title>Erratum, April 2024</title>
+<para>The <port>result</port> output port has been made primary. This
+is consistent with the behavior of all known implementations.</para>
+</simplesect>
+
 </section>
 <section xml:id="c.compress">
 
@@ -1449,8 +1458,7 @@ value of the attribute in the output.
 If the attribute is named “<tag class="attribute">xml:base</tag>”, the base URI
 of the element <rfc2119>must</rfc2119> also be amended accordingly.</para>
 
-<para>If the document node is matched, the result is a document node
-containing a single text node.</para>
+<para>If the document node is matched, the result is a text document.</para>
 
 <para>If the expression matches any
 other kind of node, the entire node (and <emphasis>not</emphasis> just
@@ -2041,7 +2049,7 @@ port's document relative to the matching elements in the
 
 <p:declare-step type="p:insert">
    <p:input port="source" primary="true" content-types="xml html"/>
-   <p:input port="insertion" sequence="true" content-types="xml html"/>
+   <p:input port="insertion" sequence="true" content-types="xml html text"/>
    <p:output port="result" content-types="xml html"/>
    <p:option name="match" as="xs:string" select="'/*'" e:type="XSLTSelectionPattern"/>
    <p:option name="position" values="('first-child','last-child','before','after')" select="'after'"/>
@@ -2094,6 +2102,12 @@ as the source.</para>
 <para feature="insert-preserves-all">All document properties on the
 <port>source</port> port are preserved. The document properties on the
 <port>insertion</port> port are not preserved or present in the result document.</para>
+</simplesect>
+
+<simplesect>
+<title>Erratum, April 2024</title>
+<para>The content type of the <port>insertion</port> port has been expanded to allow
+text documents to be inserted.</para>
 </simplesect>
 </section>
 <section xml:id="c.json-join" version="5.0-extension w3c-xproc">
@@ -2760,8 +2774,7 @@ of the <port>replacement</port> document. Only non-nested matches are
 replaced. That is, once a node is replaced, its descendants cannot
 be matched.</para>
 
-<para>If the document node is matched, the result is a document node
-containing the replacement.</para>
+<para>If the document node is matched, the result is a text document.</para>
 
 <simplesect>
 <title>Document properties</title>
@@ -3032,8 +3045,7 @@ expression is used as the new value of the attribute in the output.
 If the attribute is named “<tag class="attribute">xml:base</tag>”, the base URI
 of the element <rfc2119>must</rfc2119> also be amended accordingly.</para>
 
-<para>If the document node is matched, the result is a document node
-containing a single text node.</para>
+<para>If the document node is matched, the result is a text document.</para>
 
 <para>If the expression matches any other kind of node, the entire
 node (and <emphasis>not</emphasis> just its contents) is replaced by
@@ -3211,7 +3223,7 @@ performed.</para>
     <p:option name="order" as="xs:string" select="'ascending'" values="('ascending', 'descending')"/>
     <p:option name="case-order" as="xs:string?" values="('upper-first', 'lower-first')"/>
     <p:option name="lang" as="xs:language?"/>
-    <p:option name="collation" as="xs:string" select="'https://www.w3.org/2005/xpath-functions/collation/codepoint'"/>
+    <p:option name="collation" as="xs:string" select="'http://www.w3.org/2005/xpath-functions/collation/codepoint'"/>
     <p:option name="stable" as="xs:boolean" select="true()"/>
   </p:declare-step>
 
@@ -3247,7 +3259,7 @@ performed.</para>
      <listitem>
       <para>The <option>collation</option> option identifies how strings are to be compared with each other. Its value
         must be a valid collation URI. The only collation XProc processors <rfc2119>must</rfc2119> support is the
-        Unicode Codepoint Collation <link xlink:href="https://www.w3.org/2005/xpath-functions/collation/codepoint/"><code>http://www.w3.org/2005/xpath-functions/collation/codepoint</code></link>. This is also its default.
+        Unicode Codepoint Collation <link xlink:href="http://www.w3.org/2005/xpath-functions/collation/codepoint/"><code>http://www.w3.org/2005/xpath-functions/collation/codepoint</code></link>. This is also its default.
         <impl>Support for other collations is <glossterm>implementation-defined</glossterm>.</impl></para>
     </listitem>
     <listitem>
@@ -3272,6 +3284,15 @@ newline (&amp;#10;).</para>
     <title>Document properties</title>
     <para feature="text-sort-preserves-all">All document properties are preserved.</para>
   </simplesect>
+
+<simplesect>
+<title>Erratum, April 2024</title>
+<para>The URI for the Unicode Codepoint Collation has been corrected to an <code>http:</code> URI rather than
+an <code>https:</code> one. The URI is an identifier and the correct identifier uses an <code>http:</code> URI.
+Implementations are encouraged to recognized collation URIs that begin with “<code>https://www.w3.org/</code>”
+and treat them as if they began “<code>http://www.w3.org/</code>”, with a warning, if practical.</para>
+</simplesect>
+
 </section>
 <section xml:id="c.text-tail">
   <title>p:text-tail</title>
@@ -3641,8 +3662,7 @@ matches an <emphasis>attribute</emphasis>, the UUID is used as the new
 value of the attribute in the output. If the attribute is named “<tag class="attribute">xml:base</tag>”, the base URI of the element
 <rfc2119>must</rfc2119> also be amended accordingly.</para>
 
-<para>If the document node is matched, the result is a document node
-containing a single text node.</para>
+<para>If the document node is matched, the result is a text document.</para>
 
 <para>If the expression matches any
 other kind of node, the entire node (and <emphasis>not</emphasis> just
