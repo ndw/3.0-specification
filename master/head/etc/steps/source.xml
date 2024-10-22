@@ -1460,7 +1460,7 @@ based on a (possibly dynamically constructed) XPath select expression.</para>
   <p:option name="select" required="true" as="xs:string" e:type="XPathExpression"/>
 </p:declare-step>
 
-<para>This step behaves just like an <tag>p:input</tag> with
+<para>This step behaves just like a <tag>p:with-input</tag> with
 a <tag class="attribute">select</tag> expression except that the select
 expression is computed dynamically.</para>
 
@@ -1552,10 +1552,7 @@ other kind of node, the entire node (and <emphasis>not</emphasis> just
 with resources over HTTP or related protocols. Implementations
 <rfc2119>must</rfc2119> support the <literal>http</literal> and
 <literal>https</literal> protocols.
-(Implementors are encouraged to support as many protocols as
-practical. In particular, pipeline authors may attempt to use
-<tag>p:http-request</tag> to load documents with computed URIs using
-the <literal>file:</literal> scheme.)</para>
+</para>
 
 <p:declare-step type="p:http-request">
   <p:input port="source" content-types="any" sequence="true"/>
@@ -1570,11 +1567,14 @@ the <literal>file:</literal> scheme.)</para>
   <p:option name="assert" as="xs:string" select="'.?status-code lt 400'"/>
 </p:declare-step>
 
-<para>The <tag>p:http-request</tag> step performs the HTTP request
-specified by the <option>method</option> option against the URI specified in
-the <option>href</option> option. In simple cases, for example, a GET
-request on an unauthenticated URI, nothing else is necessary to form a
-complete request.</para>
+<para>The <tag>p:http-request</tag> step performs the HTTP request specified by
+the <option>method</option> option against the URI specified in the
+<option>href</option> option. In simple cases, for example, a GET request on an
+unauthenticated URI, nothing else is necessary to form a complete request.
+(Implementors are encouraged to support as many protocols as practical. In
+particular, pipeline authors may attempt to use <tag>p:http-request</tag> to
+load documents with computed URIs using the <literal>file:</literal> scheme.)
+</para>
 
 <para>If the method, for example, POST, supports a body, the request
 body is constructed using the document(s) appearing on the
@@ -2364,10 +2364,7 @@ result a document specified by an IRI.</para>
   <p:option name="document-properties" as="map(xs:QName, item()*)?"/>
 </p:declare-step>
 
-  <para>If the option is relative, it
-    is made absolute against the base URI of the element on which it is specified
-      (<tag>p:with-option</tag> or the step in case of a syntactic shortcut value). If the
-      <option>href</option> is relative, it is made absolute against the base URI of the element on
+  <para>If the <option>href</option> is relative, it is made absolute against the base URI of the element on
     which it is specified (<tag>p:with-option</tag> or <tag>p:load</tag> in the case of a syntactic
     shortcut value). <error code="D0064">It is a <glossterm>dynamic 
       error</glossterm> if the base URI is not both absolute and valid according to <biblioref linkend="rfc3986"/>.</error></para>
@@ -2818,9 +2815,9 @@ a processing instruction and the new name has a non-null namespace.</error>
 <section xml:id="c.replace">
 <title>p:replace</title>
 
-<para>The <code>p:replace</code> step replaces matching nodes in
-its primary input with the top-level node(s) of the
-<code>replacement</code> port's document.</para>
+<para>The <code>p:replace</code> step replaces matching nodes in its primary
+input with the content of the document that appears on the
+<port>replacement</port> port.</para>
 
 <p:declare-step type="p:replace">
    <p:input port="source" primary="true" content-types="xml html"/>
@@ -2836,12 +2833,13 @@ an attribute or a namespace nodes. </error> Multiple matches are allowed, in whi
 copies of the <port>replacement</port> document will occur.</para>
 
 <para>Every node in the primary input matching the specified
-pattern is replaced in the output by the top-level node(s)
+pattern is replaced in the output by the content
 of the <port>replacement</port> document. Only non-nested matches are
 replaced. That is, once a node is replaced, its descendants cannot
 be matched.</para>
 
-<para>If the document node is matched, the result is a text document.</para>
+<para>If the document node is matched, and the <port>replacement</port> document is a text document,
+the <port>result</port> is a text document.</para>
 
 <simplesect>
 <title>Document properties</title>
