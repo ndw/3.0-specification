@@ -945,8 +945,29 @@ The archive has no <property>base-uri</property>.</para>
    <section xml:id="casting-from-xml">
       <title>Casting from an XML media type</title> 
       <itemizedlist>
+        <listitem>
+          <para>If the input document is a <tag>c:data</tag> document, casting
+          decodes the text content of the <tag>c:data</tag> element according to the
+          <tag class="attribute">encoding</tag> and processes it according to its content type.
+          The resulting document will have the specified content type.
+          The serialization property is removed.</para>
+          <para><error code="C0052">It is a <glossterm>dynamic error</glossterm> if
+          the encoding specified is not supported by the implementation.</error></para>
+          <para><error code="C0072">It is a <glossterm>dynamic
+          error</glossterm> if the <tag>c:data</tag> contains content is not
+          a valid string according to the encoding.</error></para>
+          <para><error code="C0073">It is a <glossterm>dynamic
+          error</glossterm> if the <tag>c:data</tag> element does not have
+          a <tag class="attribute">content-type</tag> attribute.</error></para>
+          <para><error code="C0074">It is a <glossterm>dynamic
+          error</glossterm> if the <option>content-type</option> is supplied and is
+          not the same as the <tag class="attribute">content-type</tag> specified on
+          the <tag>c:data</tag> element.</error>
+          </para>
+        </listitem>
          <listitem>
-            <para>Casting from one XML media type to another simply changes the
+            <para>If the input document is not a <tag>c:data</tag> document,
+            casting from one XML media type to another simply changes the
                “<literal>content-type</literal>” document property.
             </para>
          </listitem>
@@ -979,23 +1000,6 @@ The archive has no <property>base-uri</property>.</para>
                on the <port>result</port> port. The serialization property is removed.</para>
          </listitem>
          <listitem>
-            <para>Casting from an XML media type to any other media type
-               <rfc2119>must</rfc2119> support the case where the input document is
-               a <tag>c:data</tag> document. The resulting document will
-               have the specified media type and a representation that
-               is the content of the <tag>c:data</tag> element after decoding the base64
-               encoded content The serialization property is removed.</para>
-            <para><error code="C0072">It is a <glossterm>dynamic
-               error</glossterm> if the <tag>c:data</tag> contains content is not
-               a valid base64 string.</error></para>
-            <para><error code="C0073">It is a <glossterm>dynamic
-               error</glossterm> if the <tag>c:data</tag> element does not have
-               a <tag class="attribute">content-type</tag> attribute.</error></para>
-            <para><error code="C0074">It is a <glossterm>dynamic
-               error</glossterm> if the <option>content-type</option> is supplied and is
-               not the same as the <tag class="attribute">content-type</tag> specified on
-               the <tag>c:data</tag> element.</error>
-            </para>
             <para><impl>Casting from an XML media type to any other media type when
                the input document is not a <tag>c:data</tag> document is
                <glossterm>implementation-defined</glossterm>.</impl></para>
@@ -1012,7 +1016,7 @@ The archive has no <property>base-uri</property>.</para>
      <para>A <tag>c:parameter-set</tag> is a wrapper around zero or more <tag>c:param</tag>
      elements.</para>
 
-     <e:rng-pattern name="VocabParamSet"/>
+     <e:rng-pattern name="VocabParamSet" xml:id="cv.param-set"/>
 
      <para><error code="D0018">It is a <glossterm>dynamic error</glossterm> if
      the parameter list contains any elements other than <tag>c:param</tag>.</error></para>
@@ -1024,7 +1028,7 @@ The archive has no <property>base-uri</property>.</para>
      
      <para xml:id="c.param">A <tag>c:param</tag> is a name/value pair with an optional namespace.</para>
 
-     <e:rng-pattern name="VocabParam"/>
+     <e:rng-pattern name="VocabParam" xml:id="cv.param"/>
 
      <para>The <tag class="attribute">name</tag> attribute of the
      <tag>c:param</tag> must have the lexical form of a QName.</para>
@@ -1384,6 +1388,54 @@ of the element on which it occurred.</para>
       preserved. In all other cases, all document properties are preserved.</para>
 </simplesect>
 </section>
+<section xml:id="c.encode">
+<title>p:encode</title>
+
+<para>The <code>p:encode</code> step encodes an input document, for example with base64 encoding.
+</para>
+
+<p:declare-step type="p:encode">
+  <p:input port="source"/>
+  <p:output port="result" content-types="application/xml"/>
+  <p:option name="encoding" as="xs:string" select="'base64'"/>
+  <p:option name="serialization" as="map(xs:QName,item()*)?"/>
+</p:declare-step>
+
+<para>The encode step produces an XML document by encoding its input. The
+encoding value “<literal>base64</literal>” <rfc2119>must</rfc2119> be supported.
+<impl>An implementation may support encodings other than
+<literal>base64</literal>, but these encodings and their names are
+<glossterm>implementation-defined</glossterm>.</impl> <error code="C0052">It is
+a <glossterm>dynamic error</glossterm> if the encoding specified is not supported
+by the implementation.</error>
+</para>
+
+<para>If the input document is a binary document, its content is encoded
+directly, otherwise the content is first serialized and the serialized
+representation is encoded. The <option>serialization</option> option is provided
+to control the serialization of content when it is stored. If the document to be
+stored has a “serialization” property, the serialization is controlled by the
+merger of the two maps where the entries in the “serialization” property take
+precedence. Serialization is described in <biblioref linkend="xproc31"/>.</para>
+
+<para>The result of encoding is a <tag>c:data</tag> element.</para>
+
+<e:rng-pattern name="VocabData"/>
+            
+<para>The content of the <tag>c:data</tag> element is the encoded representation
+of the content.</para>
+
+<note>
+<para>There is no <code>p:decode</code> step. Decoding is performed by the
+<tag>p:cast-content-type</tag> step if the input is a <tag>c:data</tag>
+document.</para>
+</note>
+
+<simplesect>
+<title>Document properties</title>
+<para feature="encode-preserves-none">No document properties are preserved.</para>
+</simplesect>
+</section>
 <section xml:id="c.error">
 <title>p:error</title>
 
@@ -1449,24 +1501,29 @@ that’s irrelevant as no document is ever produced.</para>
 <section xml:id="c.filter">
 <title>p:filter</title>
 
-<para>The <code>p:filter</code> step selects portions of the source document
-based on a (possibly dynamically constructed) XPath select expression.</para>
+<para>The <code>p:filter</code> step evaluates an XPath expression
+against the input document.</para>
 
 <p:declare-step type="p:filter">
   <p:input port="source" content-types="xml html"/>
-  <p:output port="result" sequence="true" content-types="text xml html"/>
+  <p:output port="result" sequence="true" content-types="text xml html json"/>
   <p:option name="select" required="true" as="xs:string" e:type="XPathExpression"/>
 </p:declare-step>
 
-<para>This step behaves just like a <tag>p:with-input</tag> with
+<para>This step evaluates the <tag class="attribute">select</tag> expression
+against the input document. The result of that evaluation appears on the
+<port>result</port> port.</para>
+
+<para>This step is very similar to a <tag>p:with-input</tag> with
 a <tag class="attribute">select</tag> expression except that the select
-expression is computed dynamically.</para>
+expression is computed dynamically (because it’s a step option in this case).</para>
 
 <simplesect>
 <title>Document properties</title>
-<para feature="filter-preserves-none">No document properties are preserved.
-The <property>base-uri</property> property of each document will reflect the
-base URI of the selected node(s).
+<para feature="filter-preserves-none">No document properties are preserved. When
+portions of the input are selected, the <property>base-uri</property> property
+of each document constructed from a selected portion will reflect the base URI
+of the selected node(s).
 </para>
 </simplesect>
 </section>
@@ -2373,8 +2430,8 @@ supports redirection, then redirects <rfc2119>must</rfc2119> be
 followed.</para>
 
 <para><error code="D0011">It is a <glossterm>dynamic error</glossterm>
-if the resource referenced by a <code>p:load</code> element does not exist
-or cannot be accessed.</error></para>
+if the resource referenced by a <code>p:load</code> element does not exist,
+cannot be accessed, or if the access reports error (for example, an HTTP 404 error).</error></para>
 
 <para>The behavior of this step depends on the content type of the
 document loaded. The content type of a document is
@@ -2448,18 +2505,86 @@ the processor does not support DTD validation.</error></para>
 document is an XPath data model document consisting of a single text node.)</para>
 
 <para><error code="D0060">It is a <glossterm>dynamic error</glossterm> if the
-<option>content-type</option> specifies an encoding, which is not supported
-by the processor.</error></para>
+<option>content-type</option> specifies a charset (sometimes called the
+character encoding) that is not supported by the processor.</error></para>
 
 <para><impl>Text parameters are <glossterm>implementation-defined</glossterm>.
 </impl></para>
 
+<section xml:id="text-bom">
+<title>Byte order marks</title>
+
+<para>UTF-8 and UTF-16 inputs can begin with a byte order mark. The byte order
+mark is not considered part of the text and is not included in the text
+document.</para>
+
+<para>In order to identify the byte order mark, it is first necessary to
+identify the charset that is being
+used. The charset of an external resource is determined as follows:</para>
+
+<orderedlist>
+<listitem>
+<para>external charset information is used if available (for example, if the
+resource is loaded with HTTP or HTTPS and the server provided a charset), otherwise
+</para>
+</listitem>
+<listitem>
+<para>the charset from the content type if specified, otherwise
+</para>
+</listitem>
+<listitem>
+<para>the processor may use implementation-defined heuristics to determine the
+likely charset, otherwise
+</para>
+</listitem>
+<listitem>
+<para>UTF-8 is assumed.</para>
+</listitem>
+</orderedlist>
+
+<para>Processors <rfc2119>must</rfc2119> support UTF-8 and UTF-16. <impl>Support
+for other charsets is <glossterm>implementation-defined</glossterm>.</impl></para>
+
+<para>If the encoding is UTF-8, UTF-16, UTF-16LE, or UTF-16BE, a byte order mark
+may be present. (For any other encoding, there is no byte order mark and all of the text
+is returned.)</para>
+
+<itemizedlist>
+<listitem>
+<para>If the encoding is UTF-8 and the document begins with the bytes 
+EF BB BF, those bytes are the byte order mark. They are discarded.</para>
+</listitem>
+<listitem>
+<para>If the encoding is UTF-16 and the document begins with the bytes 
+FE FF or FF FE, those bytes are the byte order mark. They are discarded.</para>
+</listitem>
+<listitem>
+<para>If the encoding is UTF-16LE and the document begins with the bytes 
+FF FE, those bytes are the byte order mark. They are discarded.</para>
+</listitem>
+<listitem>
+<para>If the encoding is UTF-16BE and the document begins with the bytes 
+FE FF, those bytes are the byte order mark. They are discarded.</para>
+</listitem>
+<listitem>
+<para>If the encoding isn’t specified, but the file begins with a byte
+order mark (FE FF or FF FE), treat the charset as UTF-16 and
+discard the byte order mark.</para>
+</listitem>
+<listitem>
+<para>Otherwise, there is no byte order mark, nothing is discarded.
+</para>
+</listitem>
+</itemizedlist>
+
+</section>
 </section>
 
 <section xml:id="c.load.json">
 <title>Loading JSON data</title>
 
-<para>For a JSON media type, the content is loaded and parsed as JSON.</para>
+<para>For a JSON media type, the content is loaded and parsed as JSON
+<biblioref linkend="rfc8259"/>.</para>
 
 <para>The parameters specified for the <code>fn:parse-json</code> function
 in <biblioref linkend="xpath31-functions"/>
@@ -2479,6 +2604,15 @@ map contains an entry whose key is defined in the specification of
 <code>fn:parse-json</code> and whose value is not valid for that key, or if it contains
 an entry with the key fallback when the parameter <option>escape</option> with
 <literal>true()</literal> is also present.</error></para>
+
+<section xml:id="json-bom">
+<title>Byte order mark</title>
+
+<para>JSON data transmitted with the UTF-8 encoding may begin with a byte order
+mark. If it does, the byte order mark is discarded before parsing the
+input.</para>
+</section>
+
 </section>
 
 <section xml:id="c.load.html">
@@ -2733,6 +2867,7 @@ fashion.</para>
    <p:input port="alternate" sequence="true" content-types="text xml html"/>
    <p:output port="result" sequence="true" content-types="application/xml"/>
    <p:option name="wrapper" required="true" as="xs:QName"/>
+   <p:option name="attributes" as="map(xs:QName, xs:anyAtomicType)?"/>
 </p:declare-step>
 
 <para>The step takes each pair of documents, in order, one from the
@@ -2753,10 +2888,31 @@ occur between them may have come from either of the input documents;
 this step does not attempt to distinguish which one.</para>
 </note>
 
+<para>If the <option>attributes</option> option is used, a new attribute is
+created on the wrapper element for each entry in the map. The attribute name is
+taken from the entry's key while the attribute value is taken from the string
+value of the entry's value.</para>
+
+<para>Namespace declarations cannot be added
+with the <option>attributes</option> option.
+<error code="C0059">It is a <glossterm>dynamic error</glossterm> if the name
+of any attribute is “<code>xmlns</code>” or uses the prefix
+“<literal>xmlns</literal>”
+or any other prefix that resolves to the namespace name
+<uri>http://www.w3.org/2000/xmlns/</uri>.</error> However,
+if the attributes taken from the <option>attributes</option> use namespaces,
+prefixes, or prefixes bound to different namespaces, the document produced on the
+<port>result</port> output port will require namespace fixup.</para>
+
+<para>If an attribute named <tag class="attribute">xml:base</tag> is added, the
+base URI of the element <rfc2119>must</rfc2119> also be amended
+accordingly.</para>
+
 <simplesect>
 <title>Document properties</title>
 <para feature="pack-preserves-none">No document properties are preserved.
-The result documents do not have a <property>base-uri</property> property.
+The result documents do not have a <property>base-uri</property> property unless
+one is specified with the <option>attributes</option> option.
 </para>
 </simplesect>
 </section>
@@ -2975,19 +3131,77 @@ discards them. It has no output.</para>
 <p:declare-step type="p:sleep">
   <p:input port="source" sequence="true" content-types="any"/>
   <p:output port="result" sequence="true" content-types="any"/>
-  <p:option name="duration" as="xs:nonNegativeInteger" required="true"/>
+  <p:option name="duration" as="xs:string" required="true"/>
 </p:declare-step>
 
 <para>The <tag>p:sleep</tag> step copies each of the documents on the
 <port>source</port> port to the <port>result</port> port without changing them.
 Before copying the documents, it pauses for a period of time not less
-than <option>duration</option> milliseconds.</para>
+than the specified <option>duration</option>.</para>
+
+<para>The duration may be specified as an <code>xs:double</code>, indicating a number of seconds,
+or as a duration using a string that satisfies the constraints of an
+<code>xs:dayTimeDuration</code>. The duration <rfc2119>must not</rfc2119> be
+negative. 
+<error code="D0036">It is a <glossterm>dynamic error</glossterm> if the
+specified duration is not a positive number or a valid 
+<code>xs:dayTimeDuration</code>.</error> The following table summarizes
+some example durations:
+</para>
+
+<informaltable>
+<tgroup cols="3">
+<thead>
+<row>
+  <entry><code>duration</code></entry>
+  <entry>Delay</entry>
+  <entry>Notes</entry>
+</row>
+</thead>
+<tbody>
+<row>
+  <entry><code>10</code></entry>
+  <entry>10 seconds</entry>
+  <entry/>
+</row>
+<row>
+  <entry><code>3.5</code></entry>
+  <entry>3.5 seconds</entry>
+  <entry/>
+</row>
+<row>
+  <entry><code>0.271</code></entry>
+  <entry>271 milliseconds</entry>
+  <entry/>
+</row>
+<row>
+  <entry><code>PT3H1M41S</code></entry>
+  <entry>3 hours, 1 minute, and 41 seconds</entry>
+  <entry/>
+</row>
+<row>
+  <entry><code>-7</code></entry>
+  <entry>—</entry>
+  <entry>Raises <code>err:XD0036</code></entry>
+</row>
+<row>
+  <entry><code>3H</code></entry>
+  <entry>—</entry>
+  <entry>Raises <code>err:XD0036</code></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <note>
 <para>In multi-threaded implementations, there is no guarantee that this
 will pause the execution of more than one thread. However, any steps that
 depend on the output of this step will wait for this step to complete.</para>
 </note>
+
+<para>Implementations are expected to make a reasonable effort to delay for the
+specified duration, but XProc imposes no specific constraints on the precision of
+the timer.</para>
 
 <simplesect>
 <title>Document properties</title>
@@ -3043,10 +3257,6 @@ practice, if the test expression does not use the
 <function>last()</function> function, the implementation can stream
 and ignore the context size.</para>
 </note>
-
-<para>If the implementation supports passing PSVI annotations between
-steps, the <tag>p:split-sequence</tag> step <rfc2119>must</rfc2119> preserve
-any annotations that appear in the input.</para>
 
 <simplesect>
 <title>Document properties</title>
@@ -3374,10 +3584,13 @@ between that line and a following line that contains no characters.)
 All lines returned by <tag>p:text-sort</tag> are terminated with a single
 newline (&amp;#10;).</para>
 
-  <para>The sort process performed by this step is the same as described in 
-    <link xlink:href="https://www.w3.org/TR/xslt-30/#xsl-sort">The xsl:sort Element</link>. Options <option>lang</option>
-    and <option>case-order</option> are only taken into consideration if no value is selected for option
-    <option>collation</option>.</para>
+  <para>The sort process performed by this step is the same as the process described in
+  <biblioref linkend="xslt30"/> for the
+  <link xlink:href="https://www.w3.org/TR/xslt-30/#xsl-sort">xsl:sort</link> element.
+  The options <option>lang</option>
+  and <option>case-order</option> are considered only if the value
+  of the <option>collation</option> option is the empty sequence.</para>
+
   <simplesect>
     <title>Document properties</title>
     <para feature="text-sort-preserves-all">All document properties are preserved.</para>
@@ -3769,54 +3982,6 @@ its contents) is replaced by the UUID.</para>
     preserved. For other document types, all document properties are preserved.</para>
 </simplesect>
 </section>
-<section xml:id="c.wrap-sequence">
-<title>p:wrap-sequence</title>
-
-<para>The <tag>p:wrap-sequence</tag> step accepts a sequence of
-documents and produces either a single document or a new sequence of
-documents.</para>
-
-<p:declare-step type="p:wrap-sequence">
-   <p:input port="source" content-types="text xml html" sequence="true"/>
-   <p:output port="result" sequence="true" content-types="application/xml"/>
-   <p:option name="wrapper" required="true" as="xs:QName"/>
-   <p:option name="group-adjacent" as="xs:string?" e:type="XPathExpression"/>
-</p:declare-step>
-
-<para>The value of the <option>group-adjacent</option> option
-<rfc2119>must</rfc2119> be an XPathExpression.</para>
-
-<para>In its simplest form, <tag>p:wrap-sequence</tag> takes a
-sequence of documents and produces a single, new document by placing
-each document in the <port>source</port> sequence inside a new
-document element as sequential siblings. The name of the document
-element is the value specified in the <option>wrapper</option>
-option.</para>
-
-<para>The <option>group-adjacent</option> option can be used to group
-adjacent documents.
-The XPath context
-for the
-<option>group-adjacent</option> option changes over time. For each document that
-appears on the <code>source</code> port, the expression is evaluated
-with that document as the context document. The context position
-(<code>position()</code>) is the position of that document within the
-sequence and the context size (<code>last()</code>) is the total
-number of documents in the sequence.
-Whenever
-two or more sequentially adjacent documents have the same “group
-adjacent” value, they are wrapped together in a single wrapper
-element.
-Two “group adjacent” values are the same if the
-standard XPath function <code>deep-equal()</code> returns true for them.</para>
-
-<simplesect>
-<title>Document properties</title>
-<para feature="wrap-sequence-preserves-none">No document properties are preserved.
-The document produced has no <property>base-uri</property> property.
-</para>
-</simplesect>
-</section>
 <section xml:id="c.wrap">
 <title>p:wrap</title>
 
@@ -3829,6 +3994,7 @@ The document produced has no <property>base-uri</property> property.
    <p:option name="wrapper" required="true" as="xs:QName"/>
    <p:option name="match" required="true" as="xs:string" e:type="XSLTSelectionPattern"/>
    <p:option name="group-adjacent" as="xs:string?" e:type="XPathExpression"/>
+   <p:option name="attributes" as="map(xs:QName, xs:anyAtomicType)?"/>
 </p:declare-step>
 
 <para>The value of the <option>match</option> option
@@ -3870,9 +4036,99 @@ are siblings and either there are no nodes between them or all
 intervening, non-matching nodes are whitespace text, comment, or processing
 instruction nodes.</para>
 
+<para>If the <option>attributes</option> option is used, a new attribute is
+created on the wrapper element for each entry in the map. The attribute name is
+taken from the entry's key while the attribute value is taken from the string
+value of the entry's value.</para>
+
+<para>Namespace declarations cannot be added
+with the <option>attributes</option> option.
+<error code="C0059">It is a <glossterm>dynamic error</glossterm> if the name
+of any attribute is “<code>xmlns</code>” or uses the prefix
+“<literal>xmlns</literal>”
+or any other prefix that resolves to the namespace name
+<uri>http://www.w3.org/2000/xmlns/</uri>.</error> However,
+if the attributes taken from the <option>attributes</option> use namespaces,
+prefixes, or prefixes bound to different namespaces, the document produced on the
+<port>result</port> output port will require namespace fixup.</para>
+
+<para>If an attribute named <tag class="attribute">xml:base</tag> is added, the
+base URI of the element <rfc2119>must</rfc2119> also be amended
+accordingly.</para>
+
 <simplesect>
 <title>Document properties</title>
 <para feature="wrap-preserves-all">All document properties are preserved.</para>
+</simplesect>
+</section>
+<section xml:id="c.wrap-sequence">
+<title>p:wrap-sequence</title>
+
+<para>The <tag>p:wrap-sequence</tag> step accepts a sequence of
+documents and produces either a single document or a new sequence of
+documents.</para>
+
+<p:declare-step type="p:wrap-sequence">
+   <p:input port="source" content-types="text xml html" sequence="true"/>
+   <p:output port="result" sequence="true" content-types="application/xml"/>
+   <p:option name="wrapper" required="true" as="xs:QName"/>
+   <p:option name="group-adjacent" as="xs:string?" e:type="XPathExpression"/>
+   <p:option name="attributes" as="map(xs:QName, xs:anyAtomicType)?"/>
+</p:declare-step>
+
+<para>The value of the <option>group-adjacent</option> option
+<rfc2119>must</rfc2119> be an XPathExpression.</para>
+
+<para>In its simplest form, <tag>p:wrap-sequence</tag> takes a
+sequence of documents and produces a single, new document by placing
+each document in the <port>source</port> sequence inside a new
+document element as sequential siblings. The name of the document
+element is the value specified in the <option>wrapper</option>
+option.</para>
+
+<para>The <option>group-adjacent</option> option can be used to group
+adjacent documents.
+The XPath context
+for the
+<option>group-adjacent</option> option changes over time. For each document that
+appears on the <code>source</code> port, the expression is evaluated
+with that document as the context document. The context position
+(<code>position()</code>) is the position of that document within the
+sequence and the context size (<code>last()</code>) is the total
+number of documents in the sequence.
+Whenever
+two or more sequentially adjacent documents have the same “group
+adjacent” value, they are wrapped together in a single wrapper
+element.
+Two “group adjacent” values are the same if the
+standard XPath function <code>deep-equal()</code> returns true for them.</para>
+
+<para>If the <option>attributes</option> option is used, a new attribute is
+created on the wrapper element for each entry in the map. The attribute name is
+taken from the entry's key while the attribute value is taken from the string
+value of the entry's value.</para>
+
+<para>Namespace declarations cannot be added
+with the <option>attributes</option> option.
+<error code="C0059">It is a <glossterm>dynamic error</glossterm> if the name
+of any attribute is “<code>xmlns</code>” or uses the prefix
+“<literal>xmlns</literal>”
+or any other prefix that resolves to the namespace name
+<uri>http://www.w3.org/2000/xmlns/</uri>.</error> However,
+if the attributes taken from the <option>attributes</option> use namespaces,
+prefixes, or prefixes bound to different namespaces, the document produced on the
+<port>result</port> output port will require namespace fixup.</para>
+
+<para>If an attribute named <tag class="attribute">xml:base</tag> is added, the
+base URI of the element <rfc2119>must</rfc2119> also be amended
+accordingly.</para>
+
+<simplesect>
+<title>Document properties</title>
+<para feature="wrap-sequence-preserves-none">No document properties are preserved.
+The result documents do not have a <property>base-uri</property> property unless
+one is specified with the <option>attributes</option> option.
+</para>
 </simplesect>
 </section>
 <section xml:id="c.www-form-urldecode">
@@ -4230,8 +4486,8 @@ establish a base URI, the document will not have one.
   
   <section>
     <title>Invoking an XSLT 3.0 stylesheet</title>
-    <para>The value of <option>global-context-item</option> is used as global context item for the
-      stylesheet invocation. If no value is supplied, the following applies:</para>
+    <para>The value of <option>global-context-item</option> is used as the global context item for the
+      stylesheet invocation. If its value is the empty sequence, the following applies:</para>
     <itemizedlist>
       <listitem>
         <para>If there is a single document on the <port>source</port> port, this document will
@@ -4242,18 +4498,28 @@ establish a base URI, the document will not have one.
           global context item is absent.</para>
       </listitem>
     </itemizedlist>
+
+    <note>
+      <para>As a consequence of these rules, it is not possible for XProc to invoke an XSLT 3.0 stylesheet
+      with an <emphasis>empty</emphasis> global context item <emphasis>and simultaneously</emphasis>
+      process a single input document.</para>
+    </note>
+
     <para>The <option>populate-default-collection</option> option is used to control whether all
     the documents appearing on <port>source</port> port form the default collection for the XSLT
     transformation.</para>
-    <para>If no value is supplied for <option>template-name</option> option an “Apply-template
+    <para>If the value of the <option>template-name</option> option is the empty sequence, an “Apply-template
       invocation” is performed. The documents that appear on <port>source</port> are taken to be the
       initial match selection. if <option>populate-default-collection</option> is true, they
-      are also the default collection. If a value is supplied for 
-      the <option>initial-mode</option> option,
-      this value is used as the initial-mode for the invocation. <error code="C0008">It is a
-        <glossterm>dynamic error</glossterm> if the stylesheet does not support a given mode.</error> 
-      If no value is supplied, nothing is supplied to the invocation,
-      so the default behaviour defined for XSLT 3.0 could be applied.</para>
+      are also the default collection.</para>
+
+    <para>If the value of the <option>initial-mode</option> option is not the
+    empty sequence, the option value is used as the initial-mode for the
+    invocation. <error code="C0008">It is a <glossterm>dynamic error</glossterm>
+    if the stylesheet does not support a given mode.</error> If the value is 
+    the empty sequence, no initial-mode is specified and default XSLT 3.0 behavior
+    applies.</para>
+
     <para>If a value is supplied for option <option>template-name</option> a “Call template
       invocation” is performed. The documents on port <port>source</port> are taken as the default
       collection in this case. Option <option>initial-mode</option> is ignored. <error code="C0056">It is a <glossterm>dynamic error</glossterm> if the stylesheet does not provide a given
@@ -4274,7 +4540,7 @@ establish a base URI, the document will not have one.
       sequence a JSON document will be constructed and appear on the steps output port.</para>
     <para>Option <option>output-base-uri</option> sets the base output URI per XSLT 3.0
       specification. If a final result tree is constructed, this URI is used to resolve a relative
-      URI reference. If no value is supplied for <option>output-base-uri</option>, the base URI of
+      URI reference. If the value of <option>output-base-uri</option> is the empty sequence, the base URI of
       the first document in the <port>source</port> port's sequence is used. If no document is
       supplied on port <port>source</port> the base URI of the document on port <port>stylesheet</port>
       is used. <error code="C0121">It is a <glossterm>dynamic error</glossterm> if a document appearing
@@ -4496,6 +4762,11 @@ Internet Engineering Task Force. September, 2006.</bibliomixed>
 Matching of Language Tags</citetitle>.
 A. Phillips and M. Davis, editors.
 Internet Engineering Task Force. September, 2006.</bibliomixed>
+    <bibliomixed xml:id="rfc8259"><abbrev>RFC 8259</abbrev>
+<citetitle xlink:href="https://doi.org/10.17487/RFC8259">RFC 8259:
+The JavaScript Object Notation (JSON) Data Interchange Format.</citetitle>
+T. Bray, editor.
+Internet Engineering Task Force. December, 2017.</bibliomixed>
     <bibliomixed xml:id="bcp47"><abbrev>BCP 47</abbrev>
 Best Current Practices 47. Concatenation of RFC 4646: Tags for Identifying
 Languages, ed. A. Phillips and M. Davis, September 2006,

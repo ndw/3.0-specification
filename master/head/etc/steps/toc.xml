@@ -30,6 +30,7 @@
       <tocentry role="section" xml:id="c.compress">p:compress</tocentry>
       <tocentry role="section" xml:id="c.count">p:count</tocentry>
       <tocentry role="section" xml:id="c.delete">p:delete</tocentry>
+      <tocentry role="section" xml:id="c.encode">p:encode</tocentry>
       <tocentry role="section" xml:id="c.error">p:error</tocentry>
       <tocentry role="section" xml:id="c.filter">p:filter</tocentry>
       <tocentry role="section" xml:id="c.hash">p:hash</tocentry>
@@ -46,8 +47,14 @@
       <tocdiv role="section" xml:id="c.load">
          <title>p:load</title>
          <tocentry role="section" xml:id="c.load.xml">Loading XML data</tocentry>
-         <tocentry role="section" xml:id="c.load.text">Loading text data</tocentry>
-         <tocentry role="section" xml:id="c.load.json">Loading JSON data</tocentry>
+         <tocdiv role="section" xml:id="c.load.text">
+            <title>Loading text data</title>
+            <tocentry role="section" xml:id="text-bom">Byte order marks</tocentry>
+         </tocdiv>
+         <tocdiv role="section" xml:id="c.load.json">
+            <title>Loading JSON data</title>
+            <tocentry role="section" xml:id="json-bom">Byte order mark</tocentry>
+         </tocdiv>
          <tocentry role="section" xml:id="c.load.html">Loading HTML data</tocentry>
          <tocentry role="section" xml:id="c.load.binary">Loading binary data</tocentry>
       </tocdiv>
@@ -74,8 +81,8 @@
       <tocentry role="section" xml:id="c.uncompress">p:uncompress</tocentry>
       <tocentry role="section" xml:id="c.unwrap">p:unwrap</tocentry>
       <tocentry role="section" xml:id="c.uuid">p:uuid</tocentry>
-      <tocentry role="section" xml:id="c.wrap-sequence">p:wrap-sequence</tocentry>
       <tocentry role="section" xml:id="c.wrap">p:wrap</tocentry>
+      <tocentry role="section" xml:id="c.wrap-sequence">p:wrap-sequence</tocentry>
       <tocentry role="section" xml:id="c.www-form-urldecode">p:www-form-urldecode</tocentry>
       <tocentry role="section" xml:id="c.www-form-urlencode">p:www-form-urlencode</tocentry>
       <tocentry role="section" xml:id="c.xinclude">p:xinclude</tocentry>

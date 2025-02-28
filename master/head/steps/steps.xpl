@@ -92,6 +92,12 @@
                 as="xs:string"
                 e:type="XSLTSelectionPattern"/>
    </p:declare-step>
+   <p:declare-step type="p:encode" xml:id="encode">
+      <p:input port="source"/>
+      <p:output port="result" content-types="application/xml"/>
+      <p:option name="encoding" as="xs:string" select="'base64'"/>
+      <p:option name="serialization" as="map(xs:QName,item()*)?"/>
+   </p:declare-step>
    <p:declare-step type="p:error" xml:id="error">
       <p:input port="source" sequence="true" content-types="text xml"/>
       <p:output port="result" sequence="true" content-types="any"/>
@@ -99,7 +105,7 @@
    </p:declare-step>
    <p:declare-step type="p:filter" xml:id="filter">
       <p:input port="source" content-types="xml html"/>
-      <p:output port="result" sequence="true" content-types="text xml html"/>
+      <p:output port="result" sequence="true" content-types="text xml html json"/>
       <p:option name="select"
                 required="true"
                 as="xs:string"
@@ -216,6 +222,7 @@
       <p:input port="alternate" sequence="true" content-types="text xml html"/>
       <p:output port="result" sequence="true" content-types="application/xml"/>
       <p:option name="wrapper" required="true" as="xs:QName"/>
+      <p:option name="attributes" as="map(xs:QName, xs:anyAtomicType)?"/>
    </p:declare-step>
    <p:declare-step type="p:rename" xml:id="rename">
       <p:input port="source" content-types="xml html"/>
@@ -258,7 +265,7 @@
    <p:declare-step type="p:sleep" xml:id="sleep">
       <p:input port="source" sequence="true" content-types="any"/>
       <p:output port="result" sequence="true" content-types="any"/>
-      <p:option name="duration" as="xs:nonNegativeInteger" required="true"/>
+      <p:option name="duration" as="xs:string" required="true"/>
    </p:declare-step>
    <p:declare-step type="p:split-sequence" xml:id="split-sequence">
       <p:input port="source" content-types="any" sequence="true"/>
@@ -420,12 +427,6 @@
       <p:option name="version" as="xs:integer?"/>
       <p:option name="parameters" as="map(xs:QName, item()*)?"/>
    </p:declare-step>
-   <p:declare-step type="p:wrap-sequence" xml:id="wrap-sequence">
-      <p:input port="source" content-types="text xml html" sequence="true"/>
-      <p:output port="result" sequence="true" content-types="application/xml"/>
-      <p:option name="wrapper" required="true" as="xs:QName"/>
-      <p:option name="group-adjacent" as="xs:string?" e:type="XPathExpression"/>
-   </p:declare-step>
    <p:declare-step type="p:wrap" xml:id="wrap">
       <p:input port="source" content-types="xml html"/>
       <p:output port="result" content-types="application/xml"/>
@@ -435,6 +436,14 @@
                 as="xs:string"
                 e:type="XSLTSelectionPattern"/>
       <p:option name="group-adjacent" as="xs:string?" e:type="XPathExpression"/>
+      <p:option name="attributes" as="map(xs:QName, xs:anyAtomicType)?"/>
+   </p:declare-step>
+   <p:declare-step type="p:wrap-sequence" xml:id="wrap-sequence">
+      <p:input port="source" content-types="text xml html" sequence="true"/>
+      <p:output port="result" sequence="true" content-types="application/xml"/>
+      <p:option name="wrapper" required="true" as="xs:QName"/>
+      <p:option name="group-adjacent" as="xs:string?" e:type="XPathExpression"/>
+      <p:option name="attributes" as="map(xs:QName, xs:anyAtomicType)?"/>
    </p:declare-step>
    <p:declare-step type="p:www-form-urldecode" xml:id="www-form-urldecode">
       <p:output port="result" content-types="application/json"/>
