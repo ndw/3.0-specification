@@ -1,33 +1,25 @@
-<toc xmlns="http://docbook.org/ns/docbook"
-     xmlns:e="http://www.w3.org/1999/XSL/Spec/ElementSyntax"
-     xmlns:xi="http://www.w3.org/2001/XInclude">
+<toc xmlns:e="http://www.w3.org/1999/XSL/Spec/ElementSyntax"
+     xmlns:xi="http://www.w3.org/2001/XInclude"
+     xmlns="http://docbook.org/ns/docbook">
    <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
           xmlns:p="http://www.w3.org/ns/xproc"
           xmlns:xlink="http://www.w3.org/1999/xlink">XProc 3.1: Standard Step Library</title>
    <tocentry role="section" xml:id="introduction">Introduction</tocentry>
    <tocdiv role="section" xml:id="req-steps">
-      <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-             xmlns:p="http://www.w3.org/ns/xproc"
-             xmlns:xlink="http://www.w3.org/1999/xlink">Step library</title>
+      <title>Step library</title>
       <tocentry role="section" xml:id="c.add-attribute">p:add-attribute</tocentry>
       <tocentry role="section" xml:id="c.add-xml-base">p:add-xml-base</tocentry>
       <tocdiv role="section" xml:id="c.archive">
-         <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-                xmlns:p="http://www.w3.org/ns/xproc"
-                xmlns:xlink="http://www.w3.org/1999/xlink">p:archive</title>
+         <title>p:archive</title>
          <tocentry role="section" xml:id="cv.archive-manifest">The archive manifest</tocentry>
          <tocentry role="section" xml:id="cv.archive-zips">Handling of ZIP archives</tocentry>
       </tocdiv>
       <tocdiv role="section" xml:id="c.archive-manifest">
-         <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-                xmlns:p="http://www.w3.org/ns/xproc"
-                xmlns:xlink="http://www.w3.org/1999/xlink">p:archive-manifest</title>
+         <title>p:archive-manifest</title>
          <tocentry role="section" xml:id="override-content-type">Overriding content types</tocentry>
       </tocdiv>
       <tocdiv role="section" xml:id="c.cast-content-type">
-         <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-                xmlns:p="http://www.w3.org/ns/xproc"
-                xmlns:xlink="http://www.w3.org/1999/xlink">p:cast-content-type</title>
+         <title>p:cast-content-type</title>
          <tocentry role="section" xml:id="casting-from-xml">Casting from an XML media type</tocentry>
          <tocentry role="section" xml:id="casting-from-html">Casting from an HTML media type</tocentry>
          <tocentry role="section" xml:id="casting-from-json">Casting from a JSON media type</tocentry>
@@ -43,9 +35,7 @@
       <tocentry role="section" xml:id="c.filter">p:filter</tocentry>
       <tocentry role="section" xml:id="c.hash">p:hash</tocentry>
       <tocdiv role="section" xml:id="c.http-request">
-         <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-                xmlns:p="http://www.w3.org/ns/xproc"
-                xmlns:xlink="http://www.w3.org/1999/xlink">p:http-request</title>
+         <title>p:http-request</title>
          <tocentry role="section" xml:id="c.http-multipart-request">Construction of a multipart request</tocentry>
          <tocentry role="section" xml:id="c.http-multipart-response">Managing a multipart response</tocentry>
       </tocdiv>
@@ -55,20 +45,14 @@
       <tocentry role="section" xml:id="c.json-merge">p:json-merge</tocentry>
       <tocentry role="section" xml:id="c.label-elements">p:label-elements</tocentry>
       <tocdiv role="section" xml:id="c.load">
-         <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-                xmlns:p="http://www.w3.org/ns/xproc"
-                xmlns:xlink="http://www.w3.org/1999/xlink">p:load</title>
+         <title>p:load</title>
          <tocentry role="section" xml:id="c.load.xml">Loading XML data</tocentry>
          <tocdiv role="section" xml:id="c.load.text">
-            <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-                   xmlns:p="http://www.w3.org/ns/xproc"
-                   xmlns:xlink="http://www.w3.org/1999/xlink">Loading text data</title>
+            <title>Loading text data</title>
             <tocentry role="section" xml:id="text-bom">Byte order marks</tocentry>
          </tocdiv>
          <tocdiv role="section" xml:id="c.load.json">
-            <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-                   xmlns:p="http://www.w3.org/ns/xproc"
-                   xmlns:xlink="http://www.w3.org/1999/xlink">Loading JSON data</title>
+            <title>Loading JSON data</title>
             <tocentry role="section" xml:id="json-bom">Byte order mark</tocentry>
          </tocdiv>
          <tocentry role="section" xml:id="c.load.html">Loading HTML data</tocentry>
@@ -104,16 +88,12 @@
       <tocentry role="section" xml:id="c.www-form-urlencode">p:www-form-urlencode</tocentry>
       <tocentry role="section" xml:id="c.xinclude">p:xinclude</tocentry>
       <tocdiv role="section" xml:id="c.xquery">
-         <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-                xmlns:p="http://www.w3.org/ns/xproc"
-                xmlns:xlink="http://www.w3.org/1999/xlink">p:xquery</title>
+         <title>p:xquery</title>
          <tocentry role="section" xml:id="example-xquery">Example</tocentry>
          <tocentry role="section">Document properties</tocentry>
       </tocdiv>
       <tocdiv role="section" xml:id="c.xslt">
-         <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-                xmlns:p="http://www.w3.org/ns/xproc"
-                xmlns:xlink="http://www.w3.org/1999/xlink">p:xslt</title>
+         <title>p:xslt</title>
          <tocentry role="section">Invoking an XSLT 3.0 stylesheet</tocentry>
          <tocentry role="section">Invoking an XSLT 2.0 stylesheet</tocentry>
          <tocentry role="section">Invoking an XSLT 1.0 stylesheet</tocentry>
@@ -121,29 +101,21 @@
    </tocdiv>
    <tocentry role="section" xml:id="errors">Step Errors</tocentry>
    <tocdiv role="appendix" xml:id="conformance">
-      <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-             xmlns:p="http://www.w3.org/ns/xproc"
-             xmlns:xlink="http://www.w3.org/1999/xlink">Conformance</title>
+      <title>Conformance</title>
       <tocentry role="section" xml:id="implementation-defined">Implementation-defined features</tocentry>
       <tocentry role="section" xml:id="implementation-dependent">Implementation-dependent features</tocentry>
    </tocdiv>
    <tocdiv role="appendix" xml:id="references">
-      <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-             xmlns:p="http://www.w3.org/ns/xproc"
-             xmlns:xlink="http://www.w3.org/1999/xlink">References</title>
+      <title>References</title>
       <tocentry role="section" xml:id="normative-references">Normative References</tocentry>
    </tocdiv>
    <tocentry role="appendix" xml:id="glossary">Glossary</tocentry>
    <tocentry role="appendix" xml:id="ancillary-files">Ancillary files</tocentry>
    <tocentry role="appendix" xml:id="credits">Credits</tocentry>
    <tocdiv role="appendix" xml:id="changelog">
-      <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-             xmlns:p="http://www.w3.org/ns/xproc"
-             xmlns:xlink="http://www.w3.org/1999/xlink">Change Log</title>
+      <title>Change Log</title>
       <tocdiv role="section">
-         <title xmlns:cs="http://www.w3.org/XML/XProc/2006/04/components#"
-                xmlns:p="http://www.w3.org/ns/xproc"
-                xmlns:xlink="http://www.w3.org/1999/xlink">Backwards incompatible changes</title>
+         <title>Backwards incompatible changes</title>
          <tocentry role="section">Substantive changes</tocentry>
          <tocentry role="section">Editorial changes</tocentry>
       </tocdiv>
