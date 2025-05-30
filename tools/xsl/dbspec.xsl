@@ -409,9 +409,7 @@
     </script>
   </xsl:if>
 
-  <link rel="stylesheet" type="text/css" href="css/base.css"/>
-  <link rel="stylesheet" type="text/css" href="css/xproc.css"/>
-  <link rel="stylesheet" type="text/css" href="css/print.css" media="print"/>
+  <link rel="stylesheet" type="text/css" href="https://www.w3.org/StyleSheets/TR/2021/cg-final"/>
 </xsl:template>
 
 <xsl:template match="*" mode="m:head-content">
@@ -419,6 +417,7 @@
 
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no"
         name="viewport"/>
+
   <link class="removeOnSave"
         crossorigin="anonymous"
         href="https://www.w3.org"
@@ -427,17 +426,10 @@
         class="removeOnSave"
         href="js/fixup.js"
         rel="preload"/>
-  <link as="style"
-        class="removeOnSave"
-        href="css/base.css"
-        rel="preload"/>
   <link as="image"
         class="removeOnSave"
         href="https://www.w3.org/StyleSheets/TR/2016/logos/W3C"
         rel="preload"/>
-  
-  <link rel="stylesheet"
-        href="css/cg-draft.css"/>
 
   <link rel="stylesheet"
         href="css/respec.css"/>
@@ -462,10 +454,6 @@
       </xsl:attribute>
     </link>
   </xsl:for-each>
-</xsl:template>
-
-<xsl:template match="*" mode="m:javascript-body">
-  <script src="js/fixup.js"/>
 </xsl:template>
 
 <xsl:template name="t:syntax-highlight-body">
